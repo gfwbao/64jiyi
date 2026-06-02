@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>八九 · 填空 | 不正确记忆</title>
+<meta name="description" content="纪念 1989 年被抹去的这段历史。填入空缺的字,记起那些不能直说的人、事、物。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="八九 · 填空">
+<meta property="og:description" content="纪念 1989 年被抹去的这段历史。">
+<meta property="og:site_name" content="不正确记忆">
+<meta name="twitter:card" content="summary">
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+html, body { width: 100%; }
+body {
+  background: #0a0a0a;
+  color: #e5e5e5;
+  font-family: "Songti SC", "STSong", "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  padding: 16px;
+  background-image:
+    radial-gradient(circle at 90% 10%, rgba(220, 38, 38, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 10% 90%, rgba(234, 88, 12, 0.04) 0%, transparent 40%);
+}
+input, button { font-family: inherit; }
+button { outline: none; cursor: pointer; }
+button:disabled { cursor: default; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fadeIn { animation: fadeIn 0.3s ease-out; }
+.shake { animation: shake 0.4s; }
+
+.container { max-width: 640px; margin: 0 auto; }
+
+header {
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #222;
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+h1 {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: linear-gradient(90deg, #dc2626, #f97316);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+  letter-spacing: 0.1em;
+}
+.progress-count {
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 0.1em;
+}
+.intro {
+  font-size: 12px;
+  color: #888;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.puzzle-card {
+  background: #0f0f0f;
+  border: 1px solid #222;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+.puzzle-card.wrong { border-color: #dc2626; }
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.card-meta-left {
+  font-size: 11px;
+  color: #666;
+  letter-spacing: 0.15em;
+}
+.difficulty-badge {
+  padding: 2px 8px;
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.template-display {
+  font-size: 28px;
+  text-align: center;
+  padding: 20px 0;
+  letter-spacing: 0.05em;
+  line-height: 1.6;
+}
+.blank {
+  display: inline-block;
+  min-width: 32px;
+  margin: 0 2px;
+  padding: 2px 6px;
+  border-bottom: 2px solid #dc2626;
+  color: transparent;
+  font-weight: 700;
+}
+.blank.revealed { color: #fca5a5; }
+.template-char { color: #fff; }
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+#guess-input {
+  flex: 1;
+  padding: 12px 14px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  min-width: 0;
+}
+.submit-btn {
+  padding: 0 20px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.attempts-info {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
+}
+.actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+.action-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 12px;
+}
+.action-btn.hint-btn { color: #f97316; }
+.action-btn.reveal-btn { color: #666; }
+
+.hint-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(249, 115, 22, 0.08);
+  border-left: 2px solid #f97316;
+  font-size: 13px;
+  color: #fbbf24;
+  line-height: 1.6;
+}
+
+.answer-box {
+  padding: 12px 14px;
+  background: rgba(220, 38, 38, 0.12);
+  border-left: 2px solid #dc2626;
+  margin-bottom: 12px;
+  margin-top: 20px;
+}
+.answer-box.revealed-only {
+  background: #1a1a1a;
+  border-left-color: #666;
+}
+.answer-label {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+  letter-spacing: 0.1em;
+}
+.answer-text {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 700;
+}
+.explain-box {
+  padding: 14px 16px;
+  background: #0a0a0a;
+  font-size: 13px;
+  color: #ccc;
+  line-height: 1.8;
+  border-left: 2px solid #333;
+}
+
+.nav-row { display: flex; gap: 8px; }
+.nav-btn {
+  flex: 1;
+  padding: 12px;
+  background: #1a1a1a;
+  color: #ccc;
+  border: 1px solid #333;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+.nav-btn:disabled { color: #444; }
+.nav-btn.next-active {
+  background: #dc2626;
+  color: #fff;
+  font-weight: 700;
+}
+
+.progress-section { margin-top: 20px; }
+.progress-label {
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.progress-bar { display: flex; gap: 2px; }
+.progress-dot {
+  flex: 1;
+  height: 4px;
+  background: #222;
+  cursor: pointer;
+}
+.progress-dot.completed { background: #dc2626; }
+.progress-dot.current { background: #666; }
+
+footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #222;
+  font-size: 10px;
+  color: #555;
+  line-height: 1.8;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-top">
+      <div>
+        <h1>八九 · 填空</h1>
+        <div class="subtitle">纪念 1989 年被抹去的这段历史</div>
+      </div>
+      <span class="progress-count" id="progress-count">0 / 0</span>
+    </div>
+    <p class="intro">那些不能直说的人、事、物。填入空缺的字,记起被消音的历史。</p>
+  </header>
+
+  <div class="puzzle-card" id="puzzle-card">
+    <div class="card-meta">
+      <div class="card-meta-left" id="card-meta-left"></div>
+      <div class="difficulty-badge" id="difficulty-badge"></div>
+    </div>
+    <div class="template-display" id="template-display"></div>
+    <div id="interactive-area"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="prev-btn">← 上一题</button>
+    <button class="nav-btn" id="next-btn">下一题 →</button>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-label">进度</div>
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <footer>
+    不正确记忆 · 六四专题 · 共 <span id="total-count">0</span> 题<br>
+    愿真相不被遗忘
+  </footer>
+</div>
+
+<script>
+const PUZZLES = [
+  {
+    id: 0, category: "运动起点",
+    template: "胡_ _ 逝世",
+    answer: "耀邦",
+    accepts: ["耀邦", "胡耀邦", "胡耀邦逝世"],
+    hint: "1989 年 4 月 15 日,这位前中共中央总书记因心脏病猝逝,成为运动的导火索。",
+    explain: "胡耀邦,原中共中央总书记,因 1986 年学潮中态度温和被视为「资产阶级自由化」的纵容者,1987 年被迫辞职。1989 年 4 月 15 日因心脏病猝逝,享年 73 岁。学生与市民对他的悼念活动迅速演变为大规模请愿,要求重新评价胡耀邦、推进政治改革,构成八九民运的直接起点。",
+    difficulty: 1,
+  },
+  {
+    id: 1, category: "事件总称",
+    template: "_ _ 事件",
+    answer: "六四",
+    accepts: ["六四", "八九", "六四事件", "八九民运"],
+    hint: "1989 年 4 月至 6 月,因一位前总书记的去世而点燃的全国性民主运动。",
+    explain: "1989 年 4 月 15 日,胡耀邦逝世引发悼念活动,逐步演变为全国性的学生与市民抗议,要求政治改革、反腐败、新闻自由。6 月 3 日晚至 4 日凌晨,解放军戒严部队在北京进行武力清场,造成大量平民死伤,史称六四事件,又称八九民运。「六四」「8964」「五月三十五日」等是中国互联网最高等级敏感词,任何相关讨论一律删除、封号;官方对此事件长期采取模糊带过策略,仅以「1989 年春夏之交的政治风波」等词指代,正式党史著作中相关段落极度简略,目的是让这段历史在公共记忆中逐渐淡化。",
+    difficulty: 1,
+  },
+  {
+    id: 2, category: "民间组织",
+    template: "天安门_ _",
+    answer: "母亲",
+    accepts: ["母亲", "天安门母亲"],
+    hint: "由丁子霖等遇难者家属创立的群体。",
+    explain: "由人民大学退休教授丁子霖发起,成员主要是六四事件中遇难者的母亲、亲属与伤残者。她们长期记录死难者名单、要求政府公开真相、追究责任、赔偿受害者。该组织在中国大陆遭到长期监控与压制。",
+    difficulty: 1,
+  },
+  {
+    id: 3, category: "改革派领导人",
+    template: "赵_ _",
+    answer: "紫阳",
+    accepts: ["紫阳", "赵紫阳"],
+    hint: "六四时的中共中央总书记,5 月 19 日凌晨在广场对学生说「我们来得太晚了」。",
+    explain: "时任中共中央总书记。因同情学生、反对戒严,被指控「分裂党」「支持动乱」,1989 年 6 月被撤销一切职务,遭软禁长达 15 年,直至 2005 年去世。其秘密录音回忆录后以《国家的囚徒》之名在境外出版。",
+    difficulty: 1,
+  },
+  {
+    id: 4, category: "强硬派领导人",
+    template: "李_",
+    answer: "鹏",
+    accepts: ["鹏", "李鹏"],
+    hint: "时任国务院总理,5 月 20 日宣布北京戒严。",
+    explain: "时任国务院总理。1989 年 5 月 20 日代表政府宣读《戒严令》,成为镇压决策的公开执行者。海外民运圈称其为「六四屠夫」。其本人在去世后的官方讣告中并未提及六四相关角色。",
+    difficulty: 1,
+  },
+  {
+    id: 5, category: "最高决策者",
+    template: "邓_ _",
+    answer: "小平",
+    accepts: ["小平", "邓小平"],
+    hint: "六四时虽已退居二线,仍是最终拍板者。",
+    explain: "时任中央军委主席,是发动武力清场的最高决策者。6 月 9 日他接见戒严部队军以上干部时发表讲话,将抗议定性为「反革命暴乱」,称死亡军人为「烈士」。1992 年南巡讲话后,中国经济改革重新启动。",
+    difficulty: 1,
+  },
+  {
+    id: 6, category: "标志性文件",
+    template: "_ _ _ 社论",
+    answer: "四二六",
+    accepts: ["四二六", "426"],
+    hint: "1989 年 4 月 26 日《人民日报》头版社论,标题含「旗帜鲜明」四字。",
+    explain: "标题为《必须旗帜鲜明地反对动乱》,将学生悼念与请愿活动定性为「有计划的阴谋」「动乱」。这一定性极大激怒了学生群体,反而促成 4 月 27 日数十万人的大游行,运动由此进入新阶段。撤回该社论也成为学生此后的核心诉求之一。",
+    difficulty: 2,
+  },
+  {
+    id: 18, category: "关键节点",
+    template: "_ _ _ _ _ 访华",
+    answer: "戈尔巴乔夫",
+    accepts: ["戈尔巴乔夫", "戈巴契夫"],
+    hint: "1989 年 5 月 15-18 日,苏共总书记访问北京,是中苏关系正常化的历史性事件。",
+    explain: "1989 年 5 月 15 日至 18 日,苏共中央总书记戈尔巴乔夫访问北京,是中苏交恶 30 年后两国关系正常化的标志性事件,中国官方高度重视。当时全球数百家媒体云集北京报道这一外交大事,却意外成为学生运动的国际放大器:广场上的抗议画面经外媒同步传向世界。原定在天安门广场举行的欢迎仪式因学生占据广场被迫改至机场,让北京当局在国际舞台上颜面尽失。这一外交难堪被普遍认为是邓小平等强硬派下定决心动用军队清场的关键诱因之一。",
+    difficulty: 2,
+  },
+  {
+    id: 7, category: "广场标志物",
+    template: "民主_ _",
+    answer: "女神",
+    accepts: ["女神", "民主女神"],
+    hint: "5 月 30 日由中央美术学院学生在广场立起的雕像,与人民英雄纪念碑、毛主席像形成对峙。",
+    explain: "高约 10 米,由中央美术学院学生用泡沫和石膏赶制,5 月 30 日在天安门广场北端立起,正对天安门城楼上的毛泽东画像。她成为整场运动最具象征性的视觉符号,6 月 4 日清晨被戒严部队推倒。海外多座城市后来仿制了她的雕像作为纪念。",
+    difficulty: 1,
+  },
+  {
+    id: 8, category: "海外纪念",
+    template: "维园六四_ _ _ _",
+    answer: "烛光晚会",
+    accepts: ["烛光晚会", "维园六四烛光晚会", "维园烛光晚会"],
+    hint: "由香港支联会在维多利亚公园举办、连续 30 年的纪念活动。",
+    explain: "由香港市民支援爱国民主运动联合会(支联会)主办,自 1990 年起每年 6 月 4 日在维多利亚公园举行,曾是全球规模最大的六四纪念活动,参与者最多时逾 18 万人。2020 年以防疫为由被禁,2021 年支联会解散,活动正式终结。",
+    difficulty: 1,
+  },
+  {
+    id: 9, category: "秘密营救",
+    template: "_ _ 行动",
+    answer: "黄雀",
+    accepts: ["黄雀", "黄雀行动"],
+    hint: "代号取自曹植诗《野田黄雀行》,由司徒华、陈达钲等人主导。",
+    explain: "1989 年 6 月下旬至 1997 年间,由香港支联会司徒华、陈达钲等人组织,联合商人、艺人、黑帮、走私者、西方外交官,秘密营救被通缉的民运人士偷渡至香港、再转往海外。营救对象包括吾尔开希、柴玲、封从德、苏晓康、严家其等数百人。",
+    difficulty: 2,
+  },
+  {
+    id: 10, category: "知识分子",
+    template: "刘_ _",
+    answer: "晓波",
+    accepts: ["晓波", "刘晓波"],
+    hint: "六四时与侯德健等四人在广场绝食,后成为 2010 年诺贝尔和平奖得主。",
+    explain: "六四前夕从美国返回北京,6 月 2 日与高新、周舵、侯德健发起「广场四君子」绝食,并在清场时协助谈判让学生从广场和平撤离,被认为减少了死伤。2009 年因《零八宪章》以「煽动颠覆国家政权罪」判刑 11 年,2010 年获诺贝尔和平奖,2017 年在羁押中因病去世。",
+    difficulty: 1,
+  },
+  {
+    id: 11, category: "标志影像",
+    template: "_ _ 人",
+    answer: "坦克",
+    accepts: ["坦克", "坦克人"],
+    hint: "1989 年 6 月 5 日长安街,一人手提购物袋只身阻挡军车队列。",
+    explain: "1989 年 6 月 5 日上午,一名身穿白衬衫、手提购物袋的男子在长安街上只身挡住一队由东向西行进的坦克。该画面由美联社记者杰夫·怀德纳等人从北京饭店拍摄,成为 20 世纪最具影响力的照片之一。其身份与下落至今成谜,海外多以「王维林」之名指代他。",
+    difficulty: 1,
+  },
+  {
+    id: 12, category: "跨时代回响",
+    template: "Why? It's my _ _ _ _ !",
+    answer: "duty",
+    accepts: ["duty", "Duty", "DUTY"],
+    hint: "2022 年白纸运动期间,北京亮马桥一名青年面对 BBC 镜头用英语回答记者「为什么要来抗议」。",
+    explain: "2022 年 11 月 27 日白纸运动期间,北京亮马桥抗议现场,一名中国青年面对 BBC 镜头用英语说「It's my duty. It's our duty.」(这是我的职责。这是我们的职责。) 这一画面被广泛认为呼应了 1989 年六四时学生对外媒说出同一句话的瞬间,成为两代抗议者之间的精神接力。",
+    difficulty: 3,
+  },
+  {
+    id: 13, category: "学生组织",
+    template: "_ _ 联",
+    answer: "高自",
+    display: "高自联（成员自称北高联）",
+    accepts: ["高自联", "北高联", "高自", "北高"],
+    hint: "1989 年北京各高校学生组成的跨校自治组织。",
+    explain: "全称「北京高校学生自治联合会」,1989 年 4 月底成立,是运动中影响最大的跨校学生组织。组织成员自称「北高联」,中共在通缉令等官方文件中则简称其为「高自联」。1989 年 6 月 13 日,北京市公安局发布通缉令搜捕 21 名学生骨干,包括王丹(北大)、吾尔开希(北师大)、柴玲(北师大)、周锋锁(清华)、封从德(北大)等。其中 7 人经黄雀行动成功流亡海外,其余被捕者多以「反革命宣传煽动罪」判刑。该通缉令至今未撤销。",
+    difficulty: 2,
+  },
+  {
+    id: 14, category: "工人组织",
+    template: "_ _ 联",
+    answer: "工自",
+    display: "工自联",
+    accepts: ["工自联", "工自"],
+    hint: "「北京工人自治联合会」的简称,工人代表组织。",
+    explain: "全称「北京工人自治联合会」,是运动期间自发形成的独立工人组织,标志着抗议从学生群体扩展到工人阶层。这被普遍认为是触动当局武力清场决心的关键因素之一。六四后其骨干韩东方、李进进等人遭重判,部分人经黄雀行动流亡海外。",
+    difficulty: 2,
+  },
+  {
+    id: 15, category: "运动口号",
+    template: "反_ _ 反腐败",
+    answer: "官倒",
+    accepts: ["官倒", "反官倒"],
+    hint: "运动初期最具民意基础的核心诉求之一,针对官员子女利用权力倒卖物资牟利。",
+    explain: "「官倒」指利用官员权力倒卖紧俏物资、批文牟取暴利的现象,被认为是 1980 年代末通货膨胀与社会不公的根源。「反官倒、反腐败」是 1989 年学生运动最早、最有民意共鸣的口号之一,连接了广场上的学生与北京普通市民。",
+    difficulty: 2,
+  },
+  {
+    id: 16, category: "屠杀地点",
+    template: "_ _ 地",
+    answer: "木樨",
+    accepts: ["木樨", "木樨地"],
+    hint: "长安街向西延伸的路段,是 6 月 3 日夜间军队进城时民众伤亡最惨重的地点之一。",
+    explain: "位于复兴门外大街,是戒严部队从西向东进入天安门广场的主要路线。1989 年 6 月 3 日深夜至 4 日凌晨,戒严部队在该路段向阻拦军车的市民开枪,造成大量平民死伤,是整起清场行动中最血腥的地段之一。",
+    difficulty: 3,
+  },
+  {
+    id: 19, category: "执行部队",
+    template: "_ _ 部队",
+    answer: "戒严",
+    accepts: ["戒严", "戒严部队"],
+    hint: "1989 年 5 月 20 日北京戒严后,奉命进城执行天安门广场清场任务的武装部队的统称。",
+    explain: "1989 年 5 月 20 日北京宣布戒严后,中央军委从多个军区调集约 20 万兵力组成戒严部队,包括第 27、38、39、54、63、65 集团军等主力部队。6 月 3 日晚至 4 日凌晨,戒严部队动用坦克、装甲车和实弹武器从多个方向强行进入北京市区并清场,沿途及天安门广场周边造成大量平民死伤。事后,中共官方表彰参与镇压的部队为「共和国卫士」,而拒绝执行开枪命令的第 38 集团军军长徐勤先则遭军事法庭判刑,成为公开抗命的标志性人物。",
+    difficulty: 2,
+  },
+  {
+    id: 17, category: "海外组织",
+    template: "香港_ _ _",
+    answer: "支联会",
+    accepts: ["支联会", "香港支联会"],
+    hint: "全称「香港市民支援爱国民主运动联合会」,由司徒华等人于 1989 年 5 月创立。",
+    explain: "全称「香港市民支援爱国民主运动联合会」,1989 年 5 月 21 日成立,由司徒华任主席。除组织每年的维园六四烛光晚会外,亦发起黄雀行动救援民运人士。2021 年 9 月,在《港区国安法》下被指控「煽动颠覆国家政权」,被迫宣布解散,多名骨干被捕入狱。",
+    difficulty: 2,
+  },
+];
+
+const state = {
+  filteredPuzzles: PUZZLES.slice(),
+  currentIdx: 0,
+  attempts: 0,
+  solved: false,
+  showHint: false,
+  showAnswer: false,
+  completed: new Set(),
+  seen: new Set(),        // 已处理(答对或放弃)的题
+  startTime: null,        // 首次作答的时间戳
+  elapsedMs: 0,           // 完成时的总耗时
+  totalAttempts: 0,       // 全程总尝试次数
+  finished: false,        // 是否已完成全部题目
+};
+
+const DIFFICULTY = {
+  1: { label: "易", color: "#65a30d" },
+  2: { label: "中", color: "#ca8a04" },
+  3: { label: "难", color: "#dc2626" },
+};
+
+function el(tag, props, ...children) {
+  const e = document.createElement(tag);
+  if (props) {
+    for (const k in props) {
+      if (k === 'className') e.className = props[k];
+      else if (k === 'onClick') e.addEventListener('click', props[k]);
+      else if (k === 'onKeyDown') e.addEventListener('keydown', props[k]);
+      else if (k === 'style') Object.assign(e.style, props[k]);
+      else if (k === 'disabled') e.disabled = props[k];
+      else e.setAttribute(k, props[k]);
+    }
+  }
+  children.flat().forEach(c => {
+    if (c == null || c === false) return;
+    if (typeof c === 'string' || typeof c === 'number') e.appendChild(document.createTextNode(c));
+    else e.appendChild(c);
+  });
+  return e;
+}
+
+function getCurrentPuzzle() {
+  return state.filteredPuzzles[state.currentIdx];
+}
+
+function resetPuzzleState() {
+  state.attempts = 0;
+  state.solved = false;
+  state.showHint = false;
+  state.showAnswer = false;
+}
+
+function renderTemplate() {
+  const display = document.getElementById('template-display');
+  display.innerHTML = '';
+  const puzzle = getCurrentPuzzle();
+  const reveal = state.solved || state.showAnswer;
+  let blankIdx = 0;
+  for (let i = 0; i < puzzle.template.length; i++) {
+    const ch = puzzle.template[i];
+    if (ch === '_') {
+      const span = document.createElement('span');
+      span.className = 'blank' + (reveal ? ' revealed' : '');
+      span.textContent = reveal ? (puzzle.answer[blankIdx] || '?') : '\u3000';
+      display.appendChild(span);
+      blankIdx++;
+    } else if (ch === ' ') {
+      display.appendChild(document.createTextNode(' '));
+    } else {
+      const span = document.createElement('span');
+      span.className = 'template-char';
+      span.textContent = ch;
+      display.appendChild(span);
+    }
+  }
+}
+
+function renderMeta() {
+  const puzzle = getCurrentPuzzle();
+  document.getElementById('card-meta-left').textContent =
+    '第 ' + (state.currentIdx + 1) + ' / ' + state.filteredPuzzles.length + ' 题 · ' + puzzle.category;
+  const diff = DIFFICULTY[puzzle.difficulty] || DIFFICULTY[1];
+  const badge = document.getElementById('difficulty-badge');
+  badge.textContent = diff.label;
+  badge.style.background = diff.color;
+}
+
+function renderInteractive() {
+  const area = document.getElementById('interactive-area');
+  area.innerHTML = '';
+  const puzzle = getCurrentPuzzle();
+
+  if (!state.solved && !state.showAnswer) {
+    const inputRow = el('div', { className: 'input-row' });
+    const input = el('input', {
+      id: 'guess-input',
+      type: 'text',
+      placeholder: '输入答案...',
+      autocomplete: 'off',
+      autocorrect: 'off',
+      autocapitalize: 'off',
+      spellcheck: 'false',
+      onKeyDown: function(e) { if (e.key === 'Enter') handleSubmit(); }
+    });
+    const submitBtn = el('button', {
+      className: 'submit-btn',
+      onClick: handleSubmit
+    }, '提交');
+    inputRow.appendChild(input);
+    inputRow.appendChild(submitBtn);
+    area.appendChild(inputRow);
+
+    if (state.attempts > 0) {
+      area.appendChild(el('div', { className: 'attempts-info' },
+        '已尝试 ' + state.attempts + ' 次'));
+    }
+
+    const actions = el('div', { className: 'actions' });
+    if (!state.showHint && state.attempts >= 2) {
+      actions.appendChild(el('button', {
+        className: 'action-btn hint-btn',
+        onClick: function() { state.showHint = true; renderInteractive(); }
+      }, '看提示'));
+    }
+    if (state.attempts >= 4) {
+      actions.appendChild(el('button', {
+        className: 'action-btn reveal-btn',
+        onClick: function() {
+          state.showAnswer = true;
+          state.solved = true;
+          state.seen.add(getCurrentPuzzle().id);
+          if (checkFinished()) return;
+          renderAll();
+        }
+      }, '放弃,看答案'));
+    }
+    if (actions.children.length > 0) area.appendChild(actions);
+
+    if (state.showHint) {
+      area.appendChild(el('div', {
+        className: 'hint-box fadeIn'
+      }, '提示:' + puzzle.hint));
+    }
+
+    setTimeout(function() {
+      const inp = document.getElementById('guess-input');
+      if (inp) inp.focus();
+    }, 0);
+  } else {
+    const isRevealOnly = state.showAnswer && !state.completed.has(puzzle.id);
+    const answerBox = el('div', {
+      className: 'answer-box fadeIn' + (isRevealOnly ? ' revealed-only' : '')
+    },
+      el('div', { className: 'answer-label' },
+        isRevealOnly ? '答案' : ('第 ' + state.attempts + ' 次猜中')),
+      el('div', { className: 'answer-text' }, puzzle.display || puzzle.answer)
+    );
+    area.appendChild(answerBox);
+    area.appendChild(el('div', { className: 'explain-box' }, puzzle.explain));
+  }
+}
+
+function renderNav() {
+  const prev = document.getElementById('prev-btn');
+  const next = document.getElementById('next-btn');
+  prev.disabled = state.currentIdx === 0;
+  const isLast = state.currentIdx === state.filteredPuzzles.length - 1;
+  next.disabled = isLast;
+  next.className = 'nav-btn' + (state.solved && !isLast ? ' next-active' : '');
+}
+
+function renderProgressBar() {
+  const bar = document.getElementById('progress-bar');
+  bar.innerHTML = '';
+  state.filteredPuzzles.forEach(function(p, i) {
+    const dot = el('div', {
+      className: 'progress-dot' +
+        (state.completed.has(p.id) ? ' completed' :
+         (i === state.currentIdx ? ' current' : '')),
+      title: p.category,
+      onClick: function() { state.currentIdx = i; resetPuzzleState(); renderAll(); }
+    });
+    bar.appendChild(dot);
+  });
+  document.getElementById('progress-count').textContent =
+    state.completed.size + ' / ' + PUZZLES.length;
+}
+
+function renderAll() {
+  renderMeta();
+  renderTemplate();
+  renderInteractive();
+  renderNav();
+  renderProgressBar();
+}
+
+function handleSubmit() {
+  const input = document.getElementById('guess-input');
+  if (!input) return;
+  const g = input.value.trim();
+  if (!g || state.solved) return;
+  // 首次作答启动计时
+  if (state.startTime === null) state.startTime = Date.now();
+  state.attempts++;
+  state.totalAttempts++;
+  const puzzle = getCurrentPuzzle();
+  if (puzzle.accepts.indexOf(g) !== -1) {
+    state.solved = true;
+    state.completed.add(puzzle.id);
+    state.seen.add(puzzle.id);
+    if (checkFinished()) return;
+    renderAll();
+  } else {
+    input.value = '';
+    const card = document.getElementById('puzzle-card');
+    card.classList.add('wrong', 'shake');
+    setTimeout(function() { card.classList.remove('shake'); }, 400);
+    setTimeout(function() { card.classList.remove('wrong'); }, 600);
+    renderInteractive();
+  }
+}
+
+// 检测是否所有题目都已处理(答对或放弃),若是则进入完成页
+function checkFinished() {
+  if (state.seen.size === PUZZLES.length && !state.finished) {
+    state.finished = true;
+    state.elapsedMs = state.startTime ? (Date.now() - state.startTime) : 0;
+    renderFinishScreen();
+    return true;
+  }
+  return false;
+}
+
+// 格式化耗时:毫秒 -> "X 分 Y 秒"
+function formatDuration(ms) {
+  const totalSec = Math.round(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  if (min === 0) return sec + ' 秒';
+  return min + ' 分 ' + sec + ' 秒';
+}
+
+// 完成页面
+function renderFinishScreen() {
+  const container = document.querySelector('.container');
+  container.innerHTML = '';
+
+  const wrap = el('div', {
+    className: 'fadeIn',
+    style: { textAlign: 'center', padding: '40px 16px 20px' }
+  });
+
+  wrap.appendChild(el('div', {
+    style: {
+      fontSize: '13px', color: '#888', letterSpacing: '0.2em', marginBottom: '16px'
+    }
+  }, '全 部 填 空 已 完 成'));
+
+  wrap.appendChild(el('h1', {
+    style: {
+      fontSize: '32px', fontWeight: 900, letterSpacing: '0.06em', marginBottom: '8px',
+      background: 'linear-gradient(90deg, #dc2626, #f97316)',
+      webkitBackgroundClip: 'text', backgroundClip: 'text',
+      webkitTextFillColor: 'transparent'
+    }
+  }, '记忆已复原'));
+
+  wrap.appendChild(el('p', {
+    style: { fontSize: '13px', color: '#999', lineHeight: 1.8, marginBottom: '32px', maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto' }
+  }, '你填回了这 ' + PUZZLES.length + ' 个被消音的词。每一个空格,都是一次对遗忘的抵抗。'));
+
+  // 统计卡片
+  const stats = el('div', {
+    style: {
+      display: 'flex', justifyContent: 'center', gap: '12px',
+      flexWrap: 'wrap', marginBottom: '36px'
+    }
+  });
+
+  function statCard(label, value) {
+    return el('div', {
+      style: {
+        background: '#0f0f0f', border: '1px solid #222',
+        padding: '18px 22px', minWidth: '120px'
+      }
+    },
+      el('div', { style: { fontSize: '26px', fontWeight: 900, color: '#fff', marginBottom: '4px' } }, value),
+      el('div', { style: { fontSize: '11px', color: '#666', letterSpacing: '0.1em' } }, label)
+    );
+  }
+
+  stats.appendChild(statCard('总耗时', formatDuration(state.elapsedMs)));
+  stats.appendChild(statCard('完成题数', PUZZLES.length + ' 题'));
+  stats.appendChild(statCard('总尝试', state.totalAttempts + ' 次'));
+  wrap.appendChild(stats);
+
+  // 重新开始按钮
+  const restartBtn = el('button', {
+    style: {
+      padding: '12px 28px', background: '#dc2626', color: '#fff',
+      border: 'none', fontSize: '14px', fontWeight: 700,
+      letterSpacing: '0.05em', marginBottom: '40px'
+    },
+    onClick: function() { location.reload(); }
+  }, '再来一次');
+  wrap.appendChild(restartBtn);
+
+  // footer
+  wrap.appendChild(el('footer', {
+    style: {
+      marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #222',
+      fontSize: '10px', color: '#555', lineHeight: 1.8
+    }
+  }, el('span', null, '不正确记忆 · 六四专题'), el('br'), el('span', null, '愿真相不被遗忘')));
+
+  container.appendChild(wrap);
+}
+
+document.getElementById('prev-btn').addEventListener('click', function() {
+  if (state.currentIdx > 0) {
+    state.currentIdx--;
+    resetPuzzleState();
+    renderAll();
+  }
+});
+
+document.getElementById('next-btn').addEventListener('click', function() {
+  if (state.currentIdx < state.filteredPuzzles.length - 1) {
+    state.currentIdx++;
+    resetPuzzleState();
+    renderAll();
+  }
+});
+
+document.getElementById('total-count').textContent = PUZZLES.length;
+renderAll();
+</script>
+</body>
+</html>
