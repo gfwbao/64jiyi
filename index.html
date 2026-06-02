@@ -211,6 +211,18 @@ h1 {
   line-height: 1.8;
   border-left: 2px solid #333;
 }
+.finish-btn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  background: linear-gradient(90deg, #dc2626, #f97316);
+  color: #fff;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
 
 .nav-row { display: flex; gap: 8px; }
 .nav-btn {
@@ -531,7 +543,8 @@ const state = {
   startTime: null,        // 首次作答的时间戳
   elapsedMs: 0,           // 完成时的总耗时
   totalAttempts: 0,       // 全程总尝试次数
-  finished: false,        // 是否已完成全部题目
+  finished: false,        // 是否已进入结算页
+  allDone: false,         // 是否所有题已处理完(但可能还在看最后一题解析)
 };
 
 const DIFFICULTY = {
@@ -650,7 +663,10 @@ function renderInteractive() {
           state.showAnswer = true;
           state.solved = true;
           state.seen.add(getCurrentPuzzle().id);
-          if (checkFinished()) return;
+          if (state.seen.size === PUZZLES.length && !state.finished) {
+            state.allDone = true;
+            state.elapsedMs = state.startTime ? (Date.now() - state.startTime) : 0;
+          }
           renderAll();
         }
       }, '放弃,看答案'));
@@ -678,6 +694,16 @@ function renderInteractive() {
     );
     area.appendChild(answerBox);
     area.appendChild(el('div', { className: 'explain-box' }, puzzle.explain));
+    // 若所有题目都已处理完毕,在解析下方提供进入结算页的按钮
+    if (state.allDone && !state.finished) {
+      area.appendChild(el('button', {
+        className: 'finish-btn fadeIn',
+        onClick: function() {
+          state.finished = true;
+          renderFinishScreen();
+        }
+      }, '查看最终结果 →'));
+    }
   }
 }
 
@@ -734,7 +760,11 @@ function handleSubmit() {
     state.solved = true;
     state.completed.add(puzzle.id);
     state.seen.add(puzzle.id);
-    if (checkFinished()) return;
+    // 记录是否全部完成,但不立即跳转——先让玩家看到本题解析
+    if (state.seen.size === PUZZLES.length && !state.finished) {
+      state.allDone = true;
+      state.elapsedMs = state.startTime ? (Date.now() - state.startTime) : 0;
+    }
     renderAll();
   } else {
     input.value = '';
@@ -744,17 +774,6 @@ function handleSubmit() {
     setTimeout(function() { card.classList.remove('wrong'); }, 600);
     renderInteractive();
   }
-}
-
-// 检测是否所有题目都已处理(答对或放弃),若是则进入完成页
-function checkFinished() {
-  if (state.seen.size === PUZZLES.length && !state.finished) {
-    state.finished = true;
-    state.elapsedMs = state.startTime ? (Date.now() - state.startTime) : 0;
-    renderFinishScreen();
-    return true;
-  }
-  return false;
 }
 
 // 格式化耗时:毫秒 -> "X 分 Y 秒"
